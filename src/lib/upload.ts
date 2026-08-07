@@ -10,7 +10,8 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/gif": "gif",
 };
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+export const UPLOAD_DIR =
+  process.env.UPLOADS_DIR || path.join(process.cwd(), "uploads");
 
 export async function saveUploadedImage(file: File): Promise<string> {
   const ext = ALLOWED_TYPES[file.type];
@@ -24,7 +25,7 @@ export async function saveUploadedImage(file: File): Promise<string> {
 
   const filename = `${randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(UPLOAD_DIR, filename), buffer);
+  await writeFile(path.join(/* turbopackIgnore: true */ UPLOAD_DIR, filename), buffer);
 
   return `/uploads/${filename}`;
 }

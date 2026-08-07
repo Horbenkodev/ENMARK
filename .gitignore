@@ -42,5 +42,6 @@ next-env.d.ts
 
 /src/generated/prisma
 
-# admin-uploaded product images (local dev storage)
+# admin-uploaded product images (local dev storage; use UPLOADS_DIR to point elsewhere)
+/uploads
 /public/uploads
