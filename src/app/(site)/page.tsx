@@ -10,9 +10,9 @@ export default async function HomePage() {
   ]);
 
   const categoryImages: Record<string, string> = {
-    stoly: "/images/products/table-2.svg",
-    stiltsi: "/images/products/chair-2.svg",
-    pidvikonnia: "/images/products/windowsill-1.svg",
+    stoly: "/images/products/stoli.jpg",
+    stiltsi: "/images/products/stilci-crop.jpg",
+    pidvikonnia: "/images/products/psdvikonya.png",
   };
 
   return (
