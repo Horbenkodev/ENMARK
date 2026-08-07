@@ -10,8 +10,11 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/gif": "gif",
 };
 
-export const UPLOAD_DIR =
-  process.env.UPLOADS_DIR || path.join(process.cwd(), "uploads");
+// Prefer a Railway-mounted volume when attached, then an explicit override,
+// then a plain local folder for dev.
+export const UPLOAD_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH
+  ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, "uploads")
+  : process.env.UPLOADS_DIR || path.join(process.cwd(), "uploads");
 
 export async function saveUploadedImage(file: File): Promise<string> {
   const ext = ALLOWED_TYPES[file.type];
