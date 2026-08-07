@@ -1,15 +1,13 @@
 import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./dev.db",
-});
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 const categories = [
   { name: "Столи", slug: "stoly", order: 1 },
-  { name: "Крісла", slug: "krisla", order: 2 },
-  { name: "Стільці", slug: "stiltsi", order: 3 },
+  { name: "Стільці", slug: "stiltsi", order: 2 },
+  { name: "Підвіконня", slug: "pidvikonnia", order: 3 },
 ];
 
 const products = [
@@ -41,33 +39,6 @@ const products = [
     isTopSeller: false,
   },
   {
-    title: "Aspen",
-    slug: "aspen",
-    price: 12890,
-    attribute: "М'яке крісло для вітальні",
-    categorySlug: "krisla",
-    image: "/images/products/armchair-1.svg",
-    isTopSeller: true,
-  },
-  {
-    title: "Mira",
-    slug: "mira",
-    price: 10990,
-    attribute: "М'яке крісло для вітальні",
-    categorySlug: "krisla",
-    image: "/images/products/armchair-2.svg",
-    isTopSeller: false,
-  },
-  {
-    title: "Nordic",
-    slug: "nordic",
-    price: 9490,
-    attribute: "М'яке крісло для вітальні",
-    categorySlug: "krisla",
-    image: "/images/products/armchair-3.svg",
-    isTopSeller: false,
-  },
-  {
     title: "Lira",
     slug: "lira",
     price: 3290,
@@ -94,9 +65,45 @@ const products = [
     image: "/images/products/chair-3.svg",
     isTopSeller: false,
   },
+  {
+    title: "Alpin",
+    slug: "alpin",
+    price: 2490,
+    attribute: "Підвіконня ПВХ, вологостійке",
+    categorySlug: "pidvikonnia",
+    image: "/images/products/windowsill-1.svg",
+    isTopSeller: true,
+  },
+  {
+    title: "Dana",
+    slug: "dana",
+    price: 2790,
+    attribute: "Підвіконня з ефектом дерева",
+    categorySlug: "pidvikonnia",
+    image: "/images/products/windowsill-2.svg",
+    isTopSeller: false,
+  },
+  {
+    title: "Solid",
+    slug: "solid",
+    price: 2650,
+    attribute: "Підвіконня ПВХ, вологостійке",
+    categorySlug: "pidvikonnia",
+    image: "/images/products/windowsill-3.svg",
+    isTopSeller: false,
+  },
 ];
 
 async function main() {
+  const keepSlugs = categories.map((c) => c.slug);
+  const obsoleteCategories = await prisma.category.findMany({
+    where: { slug: { notIn: keepSlugs } },
+  });
+  for (const c of obsoleteCategories) {
+    await prisma.product.deleteMany({ where: { categoryId: c.id } });
+    await prisma.category.delete({ where: { id: c.id } });
+  }
+
   for (const c of categories) {
     await prisma.category.upsert({
       where: { slug: c.slug },
@@ -104,6 +111,9 @@ async function main() {
       create: c,
     });
   }
+
+  const keepProductSlugs = products.map((p) => p.slug);
+  await prisma.product.deleteMany({ where: { slug: { notIn: keepProductSlugs } } });
 
   for (const p of products) {
     const category = await prisma.category.findUniqueOrThrow({

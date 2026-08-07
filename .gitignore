@@ -42,6 +42,5 @@ next-env.d.ts
 
 /src/generated/prisma
 
-# prisma sqlite db
-/prisma/dev.db
-/prisma/dev.db-journal
+# admin-uploaded product images (local dev storage)
+/public/uploads

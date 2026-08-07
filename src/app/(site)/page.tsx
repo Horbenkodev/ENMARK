@@ -11,8 +11,8 @@ export default async function HomePage() {
 
   const categoryImages: Record<string, string> = {
     stoly: "/images/products/table-2.svg",
-    krisla: "/images/products/armchair-1.svg",
     stiltsi: "/images/products/chair-2.svg",
+    pidvikonnia: "/images/products/windowsill-1.svg",
   };
 
   return (
@@ -45,7 +45,7 @@ export default async function HomePage() {
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-white">
             <Image
               src="/images/products/table-2.svg"
-              alt="Меблі MEBLI.UA"
+              alt="Меблі ENMARK"
               fill
               className="object-contain p-6"
               priority

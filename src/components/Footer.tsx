@@ -10,7 +10,7 @@ export async function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4">
           <div>
             <Link href="/" className="text-xl font-bold tracking-tight text-white">
-              MEBLI<span className="text-emerald-500">.</span>UA
+              ENMARK
             </Link>
             <p className="mt-3 max-w-xs text-sm text-neutral-400">
               Меблі для дому та HoReCa: столи, крісла та стільці власного виробництва.
@@ -55,8 +55,8 @@ export async function Footer() {
                 </a>
               </li>
               <li>
-                <a href="mailto:info@mebli.ua" className="hover:text-white">
-                  info@mebli.ua
+                <a href="mailto:info@enmark.ua" className="hover:text-white">
+                  info@enmark.ua
                 </a>
               </li>
               <li className="text-neutral-400">м. Київ, вул. Прикладна, 1</li>
@@ -65,7 +65,7 @@ export async function Footer() {
         </div>
 
         <div className="mt-10 border-t border-neutral-800 pt-6 text-xs text-neutral-500">
-          © {new Date().getFullYear()} MEBLI.UA. Усі права захищені.
+          © {new Date().getFullYear()} ENMARK. Усі права захищені.
         </div>
       </div>
     </footer>
