@@ -24,30 +24,17 @@ export default async function HomePage() {
               Меблі, які створюють затишок
             </h1>
             <p className="mt-4 max-w-md text-lg text-neutral-600">
-              Столи, крісла та стільці власного виробництва — для дому та
+              Столи, крісла та стільці — для дому та
               закладів HoReCa.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/catalog/stoly"
-                className="rounded-md bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800"
-              >
-                Переглянути каталог
-              </Link>
-              <Link
-                href="/contacts"
-                className="rounded-md border border-neutral-300 px-6 py-3 text-sm font-semibold text-neutral-900 transition-colors hover:border-neutral-400"
-              >
-                Де купити?
-              </Link>
-            </div>
+
           </div>
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-white">
+          <div className="relative aspect-[1361/893] overflow-hidden rounded-2xl bg-neutral-100">
             <Image
-              src="/images/products/table-2.svg"
+              src="/images/hero-furniture.png"
               alt="Меблі ENMARK"
               fill
-              className="object-contain p-6"
+              className="object-contain p-4"
               priority
             />
           </div>

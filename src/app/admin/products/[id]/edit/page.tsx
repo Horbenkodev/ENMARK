@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { updateProductAction, deleteProductAction } from "@/app/admin/actions";
+import {
+  updateProductAction,
+  deleteProductAction,
+  deleteProductImageAction,
+} from "@/app/admin/actions";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 
@@ -11,7 +15,10 @@ export default async function EditProductPage({
 }) {
   const { id } = await params;
   const [product, categories] = await Promise.all([
-    prisma.product.findUnique({ where: { id } }),
+    prisma.product.findUnique({
+      where: { id },
+      include: { images: { orderBy: { order: "asc" } } },
+    }),
     prisma.category.findMany({
       orderBy: { order: "asc" },
       include: { subcategories: { orderBy: { order: "asc" } } },
@@ -39,7 +46,13 @@ export default async function EditProductPage({
         </form>
       </div>
       <div className="mt-6">
-        <ProductForm action={action} categories={categories} product={product} />
+        <ProductForm
+          action={action}
+          categories={categories}
+          product={product}
+          existingImages={product.images}
+          deleteImageAction={deleteProductImageAction}
+        />
       </div>
     </div>
   );

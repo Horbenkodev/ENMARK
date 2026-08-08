@@ -40,7 +40,7 @@ export function MobileNav({ categories }: { categories: Category[] }) {
             ))}
 
             <a
-              href="tel:+380000000000"
+              href="/contacts"
               className="mt-3 rounded-md bg-emerald-500 px-4 py-2.5 text-center text-sm font-semibold text-neutral-950"
               onClick={() => setOpen(false)}
             >

@@ -51,6 +51,21 @@ async function uniqueSubcategorySlug(categoryId: string, base: string, excludeId
   return candidate;
 }
 
+async function saveGalleryImages(productId: string, formData: FormData, startOrder: number) {
+  const files = formData.getAll("images").filter(
+    (f): f is File => f instanceof File && f.size > 0,
+  );
+
+  let order = startOrder;
+  for (const file of files) {
+    const url = await saveUploadedImage(file);
+    await prisma.productImage.create({
+      data: { url, order, productId },
+    });
+    order += 1;
+  }
+}
+
 async function resolveSubcategoryId(categoryId: string, subcategoryIdRaw: string) {
   if (!subcategoryIdRaw) return null;
 
@@ -110,7 +125,7 @@ export async function createProductAction(formData: FormData) {
 
   const slug = await uniqueProductSlug(manualSlug || title);
 
-  await prisma.product.create({
+  const product = await prisma.product.create({
     data: {
       title,
       slug,
@@ -123,6 +138,8 @@ export async function createProductAction(formData: FormData) {
       image,
     },
   });
+
+  await saveGalleryImages(product.id, formData, 0);
 
   revalidatePath("/admin/products");
   revalidatePath("/");
@@ -180,9 +197,23 @@ export async function updateProductAction(id: string, formData: FormData) {
     },
   });
 
+  const existingImageCount = await prisma.productImage.count({ where: { productId: id } });
+  await saveGalleryImages(id, formData, existingImageCount);
+
   revalidatePath("/admin/products");
   revalidatePath("/");
   redirect("/admin/products");
+}
+
+export async function deleteProductImageAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await prisma.productImage.delete({ where: { id } });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/");
 }
 
 export async function deleteProductAction(formData: FormData) {

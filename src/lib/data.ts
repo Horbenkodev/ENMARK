@@ -4,6 +4,13 @@ export function getCategories() {
   return prisma.category.findMany({ orderBy: { order: "asc" } });
 }
 
+export function getCategoriesWithSubcategories() {
+  return prisma.category.findMany({
+    orderBy: { order: "asc" },
+    include: { subcategories: { orderBy: { order: "asc" } } },
+  });
+}
+
 export function getCategoryBySlug(slug: string) {
   return prisma.category.findUnique({ where: { slug } });
 }
@@ -34,7 +41,7 @@ export function getProductsByCategorySlug(slug: string, subcategorySlug?: string
 export function getProductBySlug(slug: string) {
   return prisma.product.findUnique({
     where: { slug },
-    include: { category: true },
+    include: { category: true, images: { orderBy: { order: "asc" } } },
   });
 }
 

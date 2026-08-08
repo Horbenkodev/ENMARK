@@ -13,7 +13,7 @@ export async function Footer() {
               ENMARK
             </Link>
             <p className="mt-3 max-w-xs text-sm text-neutral-400">
-              Меблі для дому та HoReCa: столи, крісла та стільці власного виробництва.
+              Меблі для дому та HoReCa: столи, крісла, стільці та підвіконня.
             </p>
           </div>
 
@@ -50,16 +50,16 @@ export async function Footer() {
             <h3 className="text-sm font-semibold text-white">Контакти</h3>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <a href="tel:+380000000000" className="hover:text-white">
-                  +380 (00) 000-00-00
+                <a href="tel:+380967062202" className="hover:text-white">
+                  +380967062202
                 </a>
               </li>
               <li>
-                <a href="mailto:info@enmark.ua" className="hover:text-white">
-                  info@enmark.ua
+                <a href="mailto:enmark.lviv@gmail.com" className="hover:text-white">
+                  enmark.lviv@gmail.com
                 </a>
               </li>
-              <li className="text-neutral-400">м. Київ, вул. Прикладна, 1</li>
+              <li className="text-neutral-400">м. Львів, ТЦ Нова Маркет, вул. Наукова 7 (2-ий поверх)</li>
             </ul>
           </div>
         </div>
