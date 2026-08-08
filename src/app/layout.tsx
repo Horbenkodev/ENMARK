@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ogImage from "@/images/products/stoli.jpg";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +13,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const title = "ENMARK — меблі для дому та HoReCa";
+const description = "Столи, крісла та стільці власного виробництва.";
+
 export const metadata: Metadata = {
-  title: "ENMARK",
-  description: "Столи, крісла та стільці власного виробництва.",
+  metadataBase: new URL("https://www.enmark.store"),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: "https://www.enmark.store",
+    siteName: "ENMARK",
+    locale: "uk_UA",
+    type: "website",
+    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [ogImage.src],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
