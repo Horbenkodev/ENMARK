@@ -8,9 +8,25 @@ export function getCategoryBySlug(slug: string) {
   return prisma.category.findUnique({ where: { slug } });
 }
 
-export function getProductsByCategorySlug(slug: string) {
+export function getSubcategoriesByCategorySlug(categorySlug: string) {
+  return prisma.subcategory.findMany({
+    where: { category: { slug: categorySlug } },
+    orderBy: { order: "asc" },
+  });
+}
+
+export function getSubcategoryBySlug(categorySlug: string, subcategorySlug: string) {
+  return prisma.subcategory.findFirst({
+    where: { slug: subcategorySlug, category: { slug: categorySlug } },
+  });
+}
+
+export function getProductsByCategorySlug(slug: string, subcategorySlug?: string) {
   return prisma.product.findMany({
-    where: { category: { slug } },
+    where: {
+      category: { slug },
+      ...(subcategorySlug ? { subcategory: { slug: subcategorySlug } } : {}),
+    },
     orderBy: { createdAt: "desc" },
   });
 }

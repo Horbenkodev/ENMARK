@@ -32,6 +32,37 @@ async function uniqueProductSlug(base: string, excludeId?: string) {
   return candidate;
 }
 
+async function uniqueSubcategorySlug(categoryId: string, base: string, excludeId?: string) {
+  const slug = slugify(base) || "subcategory";
+  let candidate = slug;
+  let i = 2;
+  while (
+    await prisma.subcategory.findFirst({
+      where: {
+        categoryId,
+        slug: candidate,
+        ...(excludeId ? { id: { not: excludeId } } : {}),
+      },
+    })
+  ) {
+    candidate = `${slug}-${i}`;
+    i += 1;
+  }
+  return candidate;
+}
+
+async function resolveSubcategoryId(categoryId: string, subcategoryIdRaw: string) {
+  if (!subcategoryIdRaw) return null;
+
+  const subcategory = await prisma.subcategory.findUnique({
+    where: { id: subcategoryIdRaw },
+  });
+  if (!subcategory || subcategory.categoryId !== categoryId) {
+    throw new Error("Обрана підкатегорія не належить обраній категорії.");
+  }
+  return subcategoryIdRaw;
+}
+
 export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
@@ -54,6 +85,7 @@ export async function createProductAction(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const priceRaw = String(formData.get("price") ?? "");
   const categoryId = String(formData.get("categoryId") ?? "");
+  const subcategoryIdRaw = String(formData.get("subcategoryId") ?? "");
   const attribute = String(formData.get("attribute") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim() || null;
   const isTopSeller = formData.get("isTopSeller") === "on";
@@ -69,6 +101,8 @@ export async function createProductAction(formData: FormData) {
     throw new Error("Некоректна ціна.");
   }
 
+  const subcategoryId = await resolveSubcategoryId(categoryId, subcategoryIdRaw);
+
   let image = "/images/products/table-1.svg";
   if (imageFile instanceof File && imageFile.size > 0) {
     image = await saveUploadedImage(imageFile);
@@ -82,6 +116,7 @@ export async function createProductAction(formData: FormData) {
       slug,
       price,
       categoryId,
+      subcategoryId,
       attribute,
       description,
       isTopSeller,
@@ -100,6 +135,7 @@ export async function updateProductAction(id: string, formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const priceRaw = String(formData.get("price") ?? "");
   const categoryId = String(formData.get("categoryId") ?? "");
+  const subcategoryIdRaw = String(formData.get("subcategoryId") ?? "");
   const attribute = String(formData.get("attribute") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim() || null;
   const isTopSeller = formData.get("isTopSeller") === "on";
@@ -114,6 +150,8 @@ export async function updateProductAction(id: string, formData: FormData) {
   if (!Number.isFinite(price) || price < 0) {
     throw new Error("Некоректна ціна.");
   }
+
+  const subcategoryId = await resolveSubcategoryId(categoryId, subcategoryIdRaw);
 
   const existing = await prisma.product.findUniqueOrThrow({ where: { id } });
 
@@ -134,6 +172,7 @@ export async function updateProductAction(id: string, formData: FormData) {
       slug,
       price,
       categoryId,
+      subcategoryId,
       attribute,
       description,
       isTopSeller,
@@ -189,6 +228,37 @@ export async function deleteCategoryAction(formData: FormData) {
   }
 
   await prisma.category.delete({ where: { id } });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/");
+}
+
+export async function createSubcategoryAction(formData: FormData) {
+  await requireAdmin();
+
+  const name = String(formData.get("name") ?? "").trim();
+  const categoryId = String(formData.get("categoryId") ?? "");
+  if (!name || !categoryId) {
+    throw new Error("Вкажіть назву та категорію.");
+  }
+
+  const slug = await uniqueSubcategorySlug(categoryId, name);
+  const count = await prisma.subcategory.count({ where: { categoryId } });
+
+  await prisma.subcategory.create({
+    data: { name, slug, categoryId, order: count + 1 },
+  });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/");
+}
+
+export async function deleteSubcategoryAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await prisma.subcategory.delete({ where: { id } });
 
   revalidatePath("/admin/categories");
   revalidatePath("/");

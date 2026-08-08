@@ -1,12 +1,17 @@
-import Image from "next/image";
+"use client";
 
-type Category = { id: string; name: string };
+import Image from "next/image";
+import { useState } from "react";
+
+type Subcategory = { id: string; name: string };
+type Category = { id: string; name: string; subcategories: Subcategory[] };
 type Product = {
   id: string;
   title: string;
   slug: string;
   price: number;
   categoryId: string;
+  subcategoryId: string | null;
   attribute: string | null;
   description: string | null;
   isTopSeller: boolean;
@@ -22,6 +27,10 @@ export function ProductForm({
   categories: Category[];
   product?: Product;
 }) {
+  const [categoryId, setCategoryId] = useState(product?.categoryId ?? "");
+  const [subcategoryId, setSubcategoryId] = useState(product?.subcategoryId ?? "");
+  const subcategories = categories.find((c) => c.id === categoryId)?.subcategories ?? [];
+
   return (
     <form action={action} className="max-w-2xl space-y-5">
       <div>
@@ -76,7 +85,11 @@ export function ProductForm({
             id="categoryId"
             name="categoryId"
             required
-            defaultValue={product?.categoryId}
+            value={categoryId}
+            onChange={(e) => {
+              setCategoryId(e.target.value);
+              setSubcategoryId("");
+            }}
             className="mt-1.5 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
           >
             <option value="" disabled>
@@ -90,6 +103,28 @@ export function ProductForm({
           </select>
         </div>
       </div>
+
+      {subcategories.length > 0 && (
+        <div>
+          <label htmlFor="subcategoryId" className="block text-sm font-medium text-neutral-700">
+            Підкатегорія
+          </label>
+          <select
+            id="subcategoryId"
+            name="subcategoryId"
+            value={subcategoryId}
+            onChange={(e) => setSubcategoryId(e.target.value)}
+            className="mt-1.5 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          >
+            <option value="">Без підкатегорії</option>
+            {subcategories.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div>
         <label htmlFor="attribute" className="block text-sm font-medium text-neutral-700">

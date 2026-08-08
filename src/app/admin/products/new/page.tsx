@@ -3,7 +3,10 @@ import { createProductAction } from "@/app/admin/actions";
 import { ProductForm } from "@/components/admin/ProductForm";
 
 export default async function NewProductPage() {
-  const categories = await prisma.category.findMany({ orderBy: { order: "asc" } });
+  const categories = await prisma.category.findMany({
+    orderBy: { order: "asc" },
+    include: { subcategories: { orderBy: { order: "asc" } } },
+  });
 
   return (
     <div>

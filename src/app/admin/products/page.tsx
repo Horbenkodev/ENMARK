@@ -8,7 +8,7 @@ import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
-    include: { category: true },
+    include: { category: true, subcategory: true },
   });
 
   return (
@@ -44,7 +44,12 @@ export default async function AdminProductsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 font-medium text-neutral-900">{p.title}</td>
-                <td className="px-4 py-3 text-neutral-600">{p.category.name}</td>
+                <td className="px-4 py-3 text-neutral-600">
+                  {p.category.name}
+                  {p.subcategory && (
+                    <span className="text-neutral-400"> · {p.subcategory.name}</span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-neutral-600">{formatPrice(p.price)}</td>
                 <td className="px-4 py-3">
                   {p.isTopSeller && (
