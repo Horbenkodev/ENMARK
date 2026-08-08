@@ -1,7 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import { getCategories, getTopSellers } from "@/lib/data";
 import { ProductCard } from "@/components/ProductCard";
+import heroFurniture from "@/images/hero-furniture.png";
+import stoliImg from "@/images/products/stoli.jpg";
+import stilciImg from "@/images/products/stilci.jpg";
+import pidvikonniaImg from "@/images/products/psdvikonya.png";
 
 export default async function HomePage() {
   const [categories, topSellers] = await Promise.all([
@@ -9,10 +13,10 @@ export default async function HomePage() {
     getTopSellers(3),
   ]);
 
-  const categoryImages: Record<string, string> = {
-    stoly: "/images/products/stoli.jpg",
-    stiltsi: "/images/products/stilci-crop.jpg",
-    pidvikonnia: "/images/products/psdvikonya.png",
+  const categoryImages: Record<string, StaticImageData> = {
+    stoly: stoliImg,
+    stiltsi: stilciImg,
+    pidvikonnia: pidvikonniaImg,
   };
 
   return (
@@ -29,9 +33,9 @@ export default async function HomePage() {
             </p>
 
           </div>
-          <div className="relative aspect-[1361/893] overflow-hidden rounded-2xl bg-neutral-100">
+          <div className="relative aspect-[1361/893] overflow-hidden rounded-2xl">
             <Image
-              src="/images/hero-furniture.png"
+              src={heroFurniture}
               alt="Меблі ENMARK"
               fill
               className="object-contain p-4"
@@ -50,9 +54,9 @@ export default async function HomePage() {
               href={`/catalog/${c.slug}`}
               className="group overflow-hidden rounded-lg border border-neutral-200 transition-shadow hover:shadow-lg"
             >
-              <div className="relative aspect-[4/3] bg-neutral-100">
+              <div className="relative aspect-[4/3]">
                 <Image
-                  src={categoryImages[c.slug] ?? "/images/products/table-1.svg"}
+                  src={categoryImages[c.slug]}
                   alt={c.name}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
