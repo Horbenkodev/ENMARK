@@ -43,7 +43,7 @@ export default async function ProductPage({
           </p>
 
           {product.description && (
-            <p className="mt-6 leading-relaxed text-neutral-600">
+            <p className="mt-6 whitespace-pre-line leading-relaxed text-neutral-600">
               {product.description}
             </p>
           )}
