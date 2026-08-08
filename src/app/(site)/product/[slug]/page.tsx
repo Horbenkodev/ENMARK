@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import { getProductBySlug, formatPrice } from "@/lib/data";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductGallery } from "@/components/ProductGallery";
@@ -43,9 +45,21 @@ export default async function ProductPage({
           </p>
 
           {product.description && (
-            <p className="mt-6 whitespace-pre-line leading-relaxed text-neutral-600">
-              {product.description}
-            </p>
+            <div className="mt-6 space-y-3 leading-relaxed text-neutral-600">
+              <ReactMarkdown
+                remarkPlugins={[remarkBreaks]}
+                components={{
+                  ul: ({ children }) => (
+                    <ul className="list-disc space-y-1 pl-5">{children}</ul>
+                  ),
+                  strong: ({ children }) => (
+                    <strong className="font-semibold text-neutral-900">{children}</strong>
+                  ),
+                }}
+              >
+                {product.description}
+              </ReactMarkdown>
+            </div>
           )}
 
           <a

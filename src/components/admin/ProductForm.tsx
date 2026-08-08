@@ -1,8 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
+
+type MarkdownAction =
+  | { label: string; title: string; wrap: string }
+  | { label: string; title: string; line: string };
+
+const MARKDOWN_ACTIONS: MarkdownAction[] = [
+  { label: "Ж", title: "Жирний", wrap: "**" },
+  { label: "К", title: "Курсив", wrap: "*" },
+  { label: "•", title: "Список", line: "- " },
+];
 
 type Subcategory = { id: string; name: string };
 type Category = { id: string; name: string; subcategories: Subcategory[] };
@@ -36,6 +46,35 @@ export function ProductForm({
   const [categoryId, setCategoryId] = useState(product?.categoryId ?? "");
   const [subcategoryId, setSubcategoryId] = useState(product?.subcategoryId ?? "");
   const subcategories = categories.find((c) => c.id === categoryId)?.subcategories ?? [];
+
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const [description, setDescription] = useState(product?.description ?? "");
+
+  function wrapSelection(wrap: string) {
+    const el = descriptionRef.current;
+    if (!el) return;
+    const { selectionStart, selectionEnd, value } = el;
+    const selected = value.slice(selectionStart, selectionEnd);
+    const newValue = value.slice(0, selectionStart) + wrap + selected + wrap + value.slice(selectionEnd);
+    setDescription(newValue);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(selectionStart + wrap.length, selectionEnd + wrap.length);
+    });
+  }
+
+  function prefixLine(prefix: string) {
+    const el = descriptionRef.current;
+    if (!el) return;
+    const { selectionStart, value } = el;
+    const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+    const newValue = value.slice(0, lineStart) + prefix + value.slice(lineStart);
+    setDescription(newValue);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(selectionStart + prefix.length, selectionStart + prefix.length);
+    });
+  }
 
   return (
     <>
@@ -151,13 +190,31 @@ export function ProductForm({
           <label htmlFor="description" className="block text-sm font-medium text-neutral-700">
             Опис
           </label>
+          <div className="mt-1.5 flex gap-1">
+            {MARKDOWN_ACTIONS.map((a) => (
+              <button
+                key={a.label}
+                type="button"
+                title={a.title}
+                onClick={() => ("wrap" in a ? wrapSelection(a.wrap) : prefixLine(a.line))}
+                className="rounded border border-neutral-300 px-2.5 py-1 text-xs font-semibold text-neutral-700 hover:bg-neutral-100"
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
           <textarea
+            ref={descriptionRef}
             id="description"
             name="description"
             rows={4}
-            defaultValue={product?.description ?? ""}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             className="mt-1.5 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
           />
+          <p className="mt-1 text-xs text-neutral-400">
+            Підтримується markdown: **жирний**, *курсив*, списки через «-»
+          </p>
         </div>
 
         <div>
