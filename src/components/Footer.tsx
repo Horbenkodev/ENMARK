@@ -60,7 +60,12 @@ export async function Footer() {
                 </a>
               </li>
               <li>
-                <a className="hover:text-white" target="_blank" href="https://www.google.com/maps/place/New+Market/@49.8001909,24.0020958,14z/data=!4m6!3m5!1s0x473adce27c967d8b:0xfe8ef87977659c01!8m2!3d49.8015426!4d24.0057252!16s%2Fg%2F11cjnpq7pb?entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D" className="hover:text-white">
+                <a
+                  href="https://www.google.com/maps/place/New+Market/@49.8001909,24.0020958,14z/data=!4m6!3m5!1s0x473adce27c967d8b:0xfe8ef87977659c01!8m2!3d49.8015426!4d24.0057252!16s%2Fg%2F11cjnpq7pb?entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white"
+                >
                   м. Львів, ТЦ Нова Маркет, вул. Наукова 7 (2-ий поверх)
                 </a>
               </li>
