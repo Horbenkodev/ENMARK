@@ -21,7 +21,7 @@ export default async function ProductPage({
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <Breadcrumbs
         items={[
-          { label: "ENMARK", href: "/" },
+          { label: "EN.MARK", href: "/" },
           { label: "Продукція" },
           { label: product.category.name, href: `/catalog/${product.category.slug}` },
           { label: product.title },
@@ -41,7 +41,7 @@ export default async function ProductPage({
             <p className="mt-2 text-neutral-500">{product.attribute}</p>
           )}
           <p className="mt-6 text-3xl font-bold text-neutral-900">
-            {formatPrice(product.price)}
+            від {formatPrice(product.price)}
           </p>
 
           {product.description && (

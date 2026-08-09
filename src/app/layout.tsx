@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const title = "ENMARK — меблі для дому та HoReCa";
+const title = "EN.MARK — меблі для дому та HoReCa";
 const description = "Столи, крісла та стільці власного виробництва.";
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title,
     description,
     url: "https://www.enmark.store",
-    siteName: "ENMARK",
+    siteName: "EN.MARK",
     locale: "uk_UA",
     type: "website",
     images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height }],

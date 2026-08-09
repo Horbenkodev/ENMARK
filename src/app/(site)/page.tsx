@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image, { type StaticImageData } from "next/image";
 import { getCategories, getTopSellers } from "@/lib/data";
 import { ProductCard } from "@/components/ProductCard";
-import heroFurniture from "@/images/hero-furniture.png";
+import heroBg from "@/images/ban1.jpg";
 import stoliImg from "@/images/products/stoli.jpg";
 import stilciImg from "@/images/products/stilci.jpg";
 import pidvikonniaImg from "@/images/products/psdvikonya.png";
@@ -21,9 +21,19 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="border-b border-neutral-200 bg-neutral-50">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 lg:px-8 lg:py-24">
-          <div>
+      <section className="relative flex flex-col border-b border-neutral-200 md:block md:h-[480px] lg:h-[600px]">
+        <div className="relative h-56 w-full sm:h-72 md:absolute md:inset-0 md:h-full">
+          <Image
+            src={heroBg}
+            alt="Меблі EN.MARK"
+            fill
+            priority
+            className="object-cover object-right"
+          />
+          <div className="absolute inset-0 hidden bg-gradient-to-r from-neutral-50 via-neutral-50/70 to-transparent md:block" />
+        </div>
+        <div className="relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 md:flex md:h-full md:items-center md:py-0 lg:px-8">
+          <div className="max-w-md">
             <h1 className="text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
               Меблі, які створюють затишок
             </h1>
@@ -31,16 +41,6 @@ export default async function HomePage() {
               Столи, крісла та стільці — для дому та
               закладів HoReCa.
             </p>
-
-          </div>
-          <div className="relative aspect-[1361/893] overflow-hidden rounded-2xl">
-            <Image
-              src={heroFurniture}
-              alt="Меблі ENMARK"
-              fill
-              className="object-contain p-4"
-              priority
-            />
           </div>
         </div>
       </section>

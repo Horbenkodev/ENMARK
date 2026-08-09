@@ -124,6 +124,7 @@ export async function createProductAction(formData: FormData) {
   }
 
   const slug = await uniqueProductSlug(manualSlug || title);
+  const order = await prisma.product.count({ where: { categoryId } });
 
   const product = await prisma.product.create({
     data: {
@@ -135,6 +136,7 @@ export async function createProductAction(formData: FormData) {
       attribute,
       description,
       isTopSeller,
+      order,
       image,
     },
   });
@@ -222,6 +224,19 @@ export async function deleteProductAction(formData: FormData) {
   if (!id) return;
 
   await prisma.product.delete({ where: { id } });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+}
+
+export async function reorderProductsAction(orderedIds: string[]) {
+  await requireAdmin();
+
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.product.update({ where: { id }, data: { order: index } }),
+    ),
+  );
 
   revalidatePath("/admin/products");
   revalidatePath("/");

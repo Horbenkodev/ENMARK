@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
+export { formatPrice } from "@/lib/format";
+
 export function getCategories() {
   return prisma.category.findMany({ orderBy: { order: "asc" } });
 }
@@ -34,7 +36,14 @@ export function getProductsByCategorySlug(slug: string, subcategorySlug?: string
       category: { slug },
       ...(subcategorySlug ? { subcategory: { slug: subcategorySlug } } : {}),
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
+}
+
+export function searchProducts(query: string) {
+  return prisma.product.findMany({
+    where: { title: { contains: query, mode: "insensitive" } },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
 }
 
@@ -48,12 +57,8 @@ export function getProductBySlug(slug: string) {
 export function getTopSellers(limit = 3) {
   return prisma.product.findMany({
     where: { isTopSeller: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     take: limit,
     include: { category: true },
   });
-}
-
-export function formatPrice(price: number) {
-  return `${price.toLocaleString("uk-UA")} ₴`;
 }

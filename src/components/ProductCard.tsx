@@ -36,7 +36,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-semibold text-neutral-900">{product.title}</h3>
           <span className="whitespace-nowrap font-semibold text-neutral-900">
-            {formatPrice(product.price)}
+            від {formatPrice(product.price)}
           </span>
         </div>
         {product.attribute && (

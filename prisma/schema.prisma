@@ -41,6 +41,7 @@ model Product {
   attribute     String?
   description   String?
   isTopSeller   Boolean        @default(false)
+  order         Int            @default(0)
   image         String
   images        ProductImage[]
   categoryId    String

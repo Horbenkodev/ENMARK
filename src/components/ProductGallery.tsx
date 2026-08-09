@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
+
+const ZOOM_SCALE = 2.2;
 
 export function ProductGallery({
   images,
@@ -13,6 +15,7 @@ export function ProductGallery({
   isTopSeller: boolean;
 }) {
   const [index, setIndex] = useState(0);
+  const [zoom, setZoom] = useState({ x: 50, y: 50, active: false });
 
   function prev() {
     setIndex((i) => (i - 1 + images.length) % images.length);
@@ -22,8 +25,23 @@ export function ProductGallery({
     setIndex((i) => (i + 1) % images.length);
   }
 
+  function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoom({ x, y, active: true });
+  }
+
+  function handleMouseLeave() {
+    setZoom((z) => ({ ...z, active: false }));
+  }
+
   return (
-    <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
+    <div
+      className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-neutral-100"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       {isTopSeller && (
         <span className="absolute left-4 top-4 z-10 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-neutral-950">
           Топ продажів
@@ -49,6 +67,15 @@ export function ProductGallery({
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
+              style={
+                i === index
+                  ? {
+                      transform: zoom.active ? `scale(${ZOOM_SCALE})` : "scale(1)",
+                      transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                      transition: zoom.active ? "transform 0.1s ease-out" : "transform 0.3s ease-out",
+                    }
+                  : undefined
+              }
               priority={i === 0}
             />
           </div>
