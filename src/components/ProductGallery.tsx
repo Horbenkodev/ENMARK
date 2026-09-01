@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const SWIPE_THRESHOLD = 40;
 
 export function ProductGallery({
   images,
@@ -14,6 +16,7 @@ export function ProductGallery({
 }) {
   const [index, setIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const touchStartX = useRef<number | null>(null);
 
   function prev() {
     setIndex((i) => (i - 1 + images.length) % images.length);
@@ -21,6 +24,19 @@ export function ProductGallery({
 
   function next() {
     setIndex((i) => (i + 1) % images.length);
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+    if (deltaX > 0) prev();
+    else next();
   }
 
   useEffect(() => {
@@ -55,6 +71,8 @@ export function ProductGallery({
           width: `${images.length * 100}%`,
           transform: `translateX(-${(index * 100) / images.length}%)`,
         }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {images.map((src, i) => (
           <button
@@ -124,7 +142,7 @@ export function ProductGallery({
             type="button"
             aria-label="Закрити"
             onClick={() => setLightboxOpen(false)}
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20"
+            className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20"
           >
             ×
           </button>
@@ -132,6 +150,8 @@ export function ProductGallery({
           <div
             className="relative h-full w-full max-w-5xl"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <Image
               src={images[index]}
