@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type MouseEvent } from "react";
-
-const ZOOM_SCALE = 2.2;
+import { useEffect, useState } from "react";
 
 export function ProductGallery({
   images,
@@ -15,7 +13,7 @@ export function ProductGallery({
   isTopSeller: boolean;
 }) {
   const [index, setIndex] = useState(0);
-  const [zoom, setZoom] = useState({ x: 50, y: 50, active: false });
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   function prev() {
     setIndex((i) => (i - 1 + images.length) % images.length);
@@ -25,23 +23,26 @@ export function ProductGallery({
     setIndex((i) => (i + 1) % images.length);
   }
 
-  function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoom({ x, y, active: true });
-  }
+  useEffect(() => {
+    if (!lightboxOpen) return;
 
-  function handleMouseLeave() {
-    setZoom((z) => ({ ...z, active: false }));
-  }
+    document.body.style.overflow = "hidden";
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxOpen]);
 
   return (
-    <div
-      className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-neutral-100"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
       {isTopSeller && (
         <span className="absolute left-4 top-4 z-10 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-neutral-950">
           Топ продажів
@@ -56,10 +57,16 @@ export function ProductGallery({
         }}
       >
         {images.map((src, i) => (
-          <div
+          <button
             key={src + i}
-            className="relative h-full shrink-0"
+            type="button"
+            aria-label="Відкрити фото на весь екран"
+            className="relative h-full shrink-0 cursor-zoom-in"
             style={{ width: `${100 / images.length}%` }}
+            onClick={() => {
+              setIndex(i);
+              setLightboxOpen(true);
+            }}
           >
             <Image
               src={src}
@@ -67,22 +74,13 @@ export function ProductGallery({
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
-              style={
-                i === index
-                  ? {
-                      transform: zoom.active ? `scale(${ZOOM_SCALE})` : "scale(1)",
-                      transformOrigin: `${zoom.x}% ${zoom.y}%`,
-                      transition: zoom.active ? "transform 0.1s ease-out" : "transform 0.3s ease-out",
-                    }
-                  : undefined
-              }
               priority={i === 0}
             />
-          </div>
+          </button>
         ))}
       </div>
 
-      {images.length > 1 && (
+      {images.length > 1 && !lightboxOpen && (
         <>
           <button
             type="button"
@@ -115,6 +113,79 @@ export function ProductGallery({
             ))}
           </div>
         </>
+      )}
+
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-8"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            aria-label="Закрити"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20"
+          >
+            ×
+          </button>
+
+          <div
+            className="relative h-full w-full max-w-5xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={images[index]}
+              alt={title}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
+
+          {images.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Попереднє фото"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prev();
+                }}
+                className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-xl text-white hover:bg-white/20 sm:left-6"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                aria-label="Наступне фото"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  next();
+                }}
+                className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-xl text-white hover:bg-white/20 sm:right-6"
+              >
+                ›
+              </button>
+
+              <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
+                {images.map((img, i) => (
+                  <button
+                    key={img + i}
+                    type="button"
+                    aria-label={`Перейти до фото ${i + 1}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIndex(i);
+                    }}
+                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                      i === index ? "bg-white" : "bg-white/50"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       )}
     </div>
   );
