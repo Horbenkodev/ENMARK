@@ -40,9 +40,11 @@ export default async function ProductPage({
           {product.attribute && (
             <p className="mt-2 text-neutral-500">{product.attribute}</p>
           )}
-          <p className="mt-6 text-3xl font-bold text-neutral-900">
-            від {formatPrice(product.price)}
-          </p>
+          {product.showPrice && (
+            <p className="mt-6 text-3xl font-bold text-neutral-900">
+              від {formatPrice(product.price)}
+            </p>
+          )}
 
           {product.description && (
             <div className="mt-6 space-y-3 leading-relaxed text-neutral-600">

@@ -1,9 +1,11 @@
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import {
   createCategoryAction,
   deleteCategoryAction,
   createSubcategoryAction,
   deleteSubcategoryAction,
+  updateCategoryImageAction,
 } from "@/app/admin/actions";
 import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 
@@ -27,11 +29,18 @@ export default async function AdminCategoriesPage() {
         {categories.map((c) => (
           <div key={c.id} className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
             <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-4 py-3">
-              <div>
-                <span className="font-semibold text-neutral-900">{c.name}</span>
-                <span className="ml-2 text-sm text-neutral-500">
-                  {c._count.products} товарів
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded bg-neutral-200">
+                  {c.image && (
+                    <Image src={c.image} alt={c.name} fill className="object-cover" />
+                  )}
+                </div>
+                <div>
+                  <span className="font-semibold text-neutral-900">{c.name}</span>
+                  <span className="ml-2 text-sm text-neutral-500">
+                    {c._count.products} товарів
+                  </span>
+                </div>
               </div>
               <form action={deleteCategoryAction}>
                 <input type="hidden" name="id" value={c.id} />
@@ -43,6 +52,26 @@ export default async function AdminCategoriesPage() {
                 </ConfirmSubmitButton>
               </form>
             </div>
+
+            <form
+              action={updateCategoryImageAction}
+              className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3"
+            >
+              <input type="hidden" name="id" value={c.id} />
+              <input
+                name="image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                required
+                className="flex-1 text-sm"
+              />
+              <button
+                type="submit"
+                className="shrink-0 rounded-md border border-neutral-300 px-3 py-1.5 text-sm font-semibold text-neutral-700 hover:bg-neutral-100"
+              >
+                Замінити фото
+              </button>
+            </form>
 
             <table className="w-full text-left text-sm">
               <tbody>
@@ -98,7 +127,7 @@ export default async function AdminCategoriesPage() {
         ))}
       </div>
 
-      <form action={createCategoryAction} className="mt-8 flex max-w-md items-end gap-3">
+      <form action={createCategoryAction} className="mt-8 flex max-w-md flex-wrap items-end gap-3">
         <div className="flex-1">
           <label htmlFor="name" className="block text-sm font-medium text-neutral-700">
             Нова категорія
@@ -110,6 +139,18 @@ export default async function AdminCategoriesPage() {
             required
             placeholder="напр. Дивани"
             className="mt-1.5 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label htmlFor="category-image" className="block text-sm font-medium text-neutral-700">
+            Фото
+          </label>
+          <input
+            id="category-image"
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="mt-1.5 text-sm"
           />
         </div>
         <button

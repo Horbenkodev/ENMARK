@@ -2,7 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/data";
-import { deleteProductAction, reorderProductsAction } from "@/app/admin/actions";
+import {
+  deleteProductAction,
+  duplicateProductAction,
+  reorderProductsAction,
+} from "@/app/admin/actions";
 import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 import { ProductReorderList } from "@/components/admin/ProductReorderList";
 
@@ -146,6 +150,12 @@ export default async function AdminProductsPage({
                         >
                           Редагувати
                         </Link>
+                        <form action={duplicateProductAction}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <button type="submit" className="text-neutral-500 hover:text-neutral-900">
+                            Дублювати
+                          </button>
+                        </form>
                         <form action={deleteProductAction}>
                           <input type="hidden" name="id" value={p.id} />
                           <ConfirmSubmitButton

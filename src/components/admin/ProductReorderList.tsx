@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useTransition, type DragEvent } from "react";
 import { formatPrice } from "@/lib/format";
-import { deleteProductAction } from "@/app/admin/actions";
+import { deleteProductAction, duplicateProductAction } from "@/app/admin/actions";
 import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 
 type Product = {
@@ -23,9 +23,15 @@ export function ProductReorderList({
   products: Product[];
   reorderAction: (orderedIds: string[]) => Promise<void>;
 }) {
+  const [prevInitialProducts, setPrevInitialProducts] = useState(initialProducts);
   const [products, setProducts] = useState(initialProducts);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  if (initialProducts !== prevInitialProducts) {
+    setPrevInitialProducts(initialProducts);
+    setProducts(initialProducts);
+  }
 
   function handleDragOver(e: DragEvent<HTMLDivElement>, index: number) {
     e.preventDefault();
@@ -87,6 +93,12 @@ export function ProductReorderList({
             >
               Редагувати
             </Link>
+            <form action={duplicateProductAction}>
+              <input type="hidden" name="id" value={p.id} />
+              <button type="submit" className="text-sm text-neutral-500 hover:text-neutral-900">
+                Дублювати
+              </button>
+            </form>
             <form action={deleteProductAction}>
               <input type="hidden" name="id" value={p.id} />
               <ConfirmSubmitButton

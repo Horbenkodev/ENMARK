@@ -27,6 +27,7 @@ type Product = {
   attribute: string | null;
   description: string | null;
   isTopSeller: boolean;
+  showPrice: boolean;
   image: string;
 };
 
@@ -122,6 +123,18 @@ export function ProductForm({
               defaultValue={product?.price}
               className="mt-1.5 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
             />
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                id="showPrice"
+                name="showPrice"
+                type="checkbox"
+                defaultChecked={product?.showPrice ?? true}
+                className="h-4 w-4 rounded border-neutral-300"
+              />
+              <label htmlFor="showPrice" className="text-sm text-neutral-700">
+                Показувати ціну на сайті
+              </label>
+            </div>
           </div>
           <div>
             <label htmlFor="categoryId" className="block text-sm font-medium text-neutral-700">

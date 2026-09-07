@@ -6,6 +6,7 @@ type Product = {
   slug: string;
   title: string;
   price: number;
+  showPrice: boolean;
   attribute: string | null;
   image: string;
   isTopSeller: boolean;
@@ -35,9 +36,11 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-semibold text-neutral-900">{product.title}</h3>
-          <span className="whitespace-nowrap font-semibold text-neutral-900">
-            від {formatPrice(product.price)}
-          </span>
+          {product.showPrice && (
+            <span className="whitespace-nowrap font-semibold text-neutral-900">
+              від {formatPrice(product.price)}
+            </span>
+          )}
         </div>
         {product.attribute && (
           <p className="mt-1 text-sm text-neutral-500">{product.attribute}</p>

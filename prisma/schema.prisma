@@ -16,6 +16,7 @@ model Category {
   id            String        @id @default(cuid())
   name          String
   slug          String        @unique
+  image         String?
   order         Int           @default(0)
   products      Product[]
   subcategories Subcategory[]
@@ -38,6 +39,7 @@ model Product {
   title         String
   slug          String         @unique
   price         Int
+  showPrice     Boolean        @default(true)
   attribute     String?
   description   String?
   isTopSeller   Boolean        @default(false)

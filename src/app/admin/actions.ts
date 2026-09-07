@@ -104,6 +104,7 @@ export async function createProductAction(formData: FormData) {
   const attribute = String(formData.get("attribute") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim() || null;
   const isTopSeller = formData.get("isTopSeller") === "on";
+  const showPrice = formData.get("showPrice") === "on";
   const manualSlug = String(formData.get("slug") ?? "").trim();
   const imageFile = formData.get("image");
 
@@ -131,6 +132,7 @@ export async function createProductAction(formData: FormData) {
       title,
       slug,
       price,
+      showPrice,
       categoryId,
       subcategoryId,
       attribute,
@@ -158,6 +160,7 @@ export async function updateProductAction(id: string, formData: FormData) {
   const attribute = String(formData.get("attribute") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim() || null;
   const isTopSeller = formData.get("isTopSeller") === "on";
+  const showPrice = formData.get("showPrice") === "on";
   const manualSlug = String(formData.get("slug") ?? "").trim();
   const imageFile = formData.get("image");
 
@@ -190,6 +193,7 @@ export async function updateProductAction(id: string, formData: FormData) {
       title,
       slug,
       price,
+      showPrice,
       categoryId,
       subcategoryId,
       attribute,
@@ -213,6 +217,55 @@ export async function deleteProductImageAction(formData: FormData) {
   if (!id) return;
 
   await prisma.productImage.delete({ where: { id } });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+}
+
+export async function duplicateProductAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const original = await prisma.product.findUniqueOrThrow({
+    where: { id },
+    include: { images: true },
+  });
+
+  const slug = await uniqueProductSlug(original.slug);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.product.updateMany({
+      where: { categoryId: original.categoryId, order: { gt: original.order } },
+      data: { order: { increment: 1 } },
+    });
+
+    const duplicate = await tx.product.create({
+      data: {
+        title: `${original.title} (копія)`,
+        slug,
+        price: original.price,
+        showPrice: original.showPrice,
+        attribute: original.attribute,
+        description: original.description,
+        isTopSeller: original.isTopSeller,
+        order: original.order + 1,
+        image: original.image,
+        categoryId: original.categoryId,
+        subcategoryId: original.subcategoryId,
+      },
+    });
+
+    if (original.images.length > 0) {
+      await tx.productImage.createMany({
+        data: original.images.map((img) => ({
+          url: img.url,
+          order: img.order,
+          productId: duplicate.id,
+        })),
+      });
+    }
+  });
 
   revalidatePath("/admin/products");
   revalidatePath("/");
@@ -250,12 +303,35 @@ export async function createCategoryAction(formData: FormData) {
     throw new Error("Вкажіть назву категорії.");
   }
 
+  const imageFile = formData.get("image");
+  let image: string | null = null;
+  if (imageFile instanceof File && imageFile.size > 0) {
+    image = await saveUploadedImage(imageFile);
+  }
+
   const slug = slugify(name) || `category-${Date.now()}`;
   const count = await prisma.category.count();
 
   await prisma.category.create({
-    data: { name, slug, order: count + 1 },
+    data: { name, slug, image, order: count + 1 },
   });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/");
+}
+
+export async function updateCategoryImageAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const imageFile = formData.get("image");
+  if (!id || !(imageFile instanceof File) || imageFile.size === 0) {
+    throw new Error("Оберіть файл зображення.");
+  }
+
+  const image = await saveUploadedImage(imageFile);
+
+  await prisma.category.update({ where: { id }, data: { image } });
 
   revalidatePath("/admin/categories");
   revalidatePath("/");
