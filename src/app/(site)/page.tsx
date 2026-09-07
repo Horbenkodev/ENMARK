@@ -13,7 +13,7 @@ export default async function HomePage() {
     getTopSellers(3),
   ]);
 
-  const categoryImages: Record<string, StaticImageData> = {
+  const legacyCategoryImages: Record<string, StaticImageData> = {
     stoly: stoliImg,
     stiltsi: stilciImg,
     pidvikonnia: pidvikonniaImg,
@@ -54,13 +54,16 @@ export default async function HomePage() {
               href={`/catalog/${c.slug}`}
               className="group overflow-hidden rounded-lg border border-neutral-200 transition-shadow hover:shadow-lg"
             >
-              <div className="relative aspect-[4/3]">
-                <Image
-                  src={categoryImages[c.slug]}
-                  alt={c.name}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+              <div className="relative aspect-[4/3] bg-neutral-100">
+                {(c.image || legacyCategoryImages[c.slug]) && (
+                  <Image
+                    src={c.image || legacyCategoryImages[c.slug]}
+                    alt={c.name}
+                    fill
+                    sizes="(min-width: 640px) 33vw, 100vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
               </div>
               <div className="p-4">
                 <h3 className="font-semibold text-neutral-900">{c.name}</h3>
