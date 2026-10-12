@@ -45,3 +45,6 @@ next-env.d.ts
 # admin-uploaded product images (local dev storage; use UPLOADS_DIR to point elsewhere)
 /uploads
 /public/uploads
+
+# vscode
+.history
