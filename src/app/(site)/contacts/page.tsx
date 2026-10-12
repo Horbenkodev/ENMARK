@@ -43,7 +43,7 @@ export default function ContactsPage() {
               Facebook
             </a>
             <a
-              href="https://www.instagram.com/stil.ua_nova.market?igsh=MWFoeTRydnV0MDNxOQ=="
+              href="https://www.instagram.com/enmark.store"
               className="flex items-center gap-1.5 text-neutral-600 hover:text-neutral-900"
               target="_blank"
               rel="noopener noreferrer"
@@ -52,7 +52,7 @@ export default function ContactsPage() {
               Instagram
             </a>
             <a
-              href="https://www.tiktok.com/@enmark_lviv?_r=1&_t=ZS-98i6jdGTDQ9"
+              href="https://www.tiktok.com/@enmark.store"
               className="flex items-center gap-1.5 text-neutral-600 hover:text-neutral-900"
               target="_blank"
               rel="noopener noreferrer"
